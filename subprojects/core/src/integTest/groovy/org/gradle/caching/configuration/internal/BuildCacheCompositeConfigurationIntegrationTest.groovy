@@ -56,10 +56,10 @@ class BuildCacheCompositeConfigurationIntegrationTest extends AbstractIntegratio
             includeBuild "i2"
         """
 
-        file("buildSrc/settings.gradle") << buildSrcCache.localCacheConfiguration() << enablingCode
-        file("i1/settings.gradle") << i1Cache.localCacheConfiguration() << enablingCode
-        file("i1/buildSrc/settings.gradle") << i1BuildSrcCache.localCacheConfiguration() << enablingCode
-        file("i2/settings.gradle") << i2Cache.localCacheConfiguration() << enablingCode
+//        file("buildSrc/settings.gradle") << buildSrcCache.localCacheConfiguration() << enablingCode
+//        file("i1/settings.gradle") << i1Cache.localCacheConfiguration() << enablingCode
+//        file("i1/buildSrc/settings.gradle") << i1BuildSrcCache.localCacheConfiguration() << enablingCode
+//        file("i2/settings.gradle") << i2Cache.localCacheConfiguration() << enablingCode
 
         buildFile << customTaskCode("root")
         file("buildSrc/build.gradle") << customTaskCode("buildSrc") << """
@@ -92,19 +92,20 @@ class BuildCacheCompositeConfigurationIntegrationTest extends AbstractIntegratio
         i1Cache.empty
         i1BuildSrcCache.empty
         i2Cache.empty
-        mainCache.listCacheFiles().size() == 4 // root, i1, i1BuildSrc, i2
+        buildSrcCache.empty
+        mainCache.listCacheFiles().size() == 5 // root, i1, i1BuildSrc, i2, buildSrc
 
-        buildSrcCache.listCacheFiles().size() == 1
+//        buildSrcCache.listCacheFiles().size() == 1
         i3Cache.listCacheFiles().size() == 1
 
         and:
-        outputContains "Using local directory build cache for build ':buildSrc' (location = ${buildSrcCache.cacheDir}, removeUnusedEntriesAfter = 7 days)."
+//        outputContains "Using local directory build cache for build ':buildSrc' (location = ${buildSrcCache.cacheDir}, removeUnusedEntriesAfter = 7 days)."
         outputContains "Using local directory build cache for build ':i2:i3' (location = ${i3Cache.cacheDir}, removeUnusedEntriesAfter = 7 days)."
         outputContains "Using local directory build cache for the root build (location = ${mainCache.cacheDir}, removeUnusedEntriesAfter = 7 days)."
 
         and:
         def finalizeOps = operations.all(FinalizeBuildCacheConfigurationBuildOperationType)
-        finalizeOps.size() == 3
+        finalizeOps.size() == 2
         def pathToCacheDirMap = finalizeOps.collectEntries {
             [
                 it.details.buildPath,
@@ -114,7 +115,7 @@ class BuildCacheCompositeConfigurationIntegrationTest extends AbstractIntegratio
 
         pathToCacheDirMap == [
             ":": mainCache.cacheDir,
-            ":buildSrc": buildSrcCache.cacheDir,
+//            ":buildSrc": buildSrcCache.cacheDir,
             ":i2:i3": i3Cache.cacheDir
         ]
 

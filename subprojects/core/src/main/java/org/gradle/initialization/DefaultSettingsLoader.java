@@ -20,7 +20,6 @@ import org.gradle.StartParameter;
 import org.gradle.api.initialization.ProjectDescriptor;
 import org.gradle.api.internal.GradleInternal;
 import org.gradle.api.internal.SettingsInternal;
-import org.gradle.api.internal.initialization.ClassLoaderScope;
 import org.gradle.initialization.buildsrc.BuildSourceBuilder;
 
 /**
@@ -99,9 +98,13 @@ public class DefaultSettingsLoader implements SettingsLoader {
 
         // We found the desired settings file, now build the associated buildSrc before loading settings.  This allows
         // the settings script to reference classes in the buildSrc.
-        ClassLoaderScope buildSourceClassLoaderScope = buildSourceBuilder.buildAndCreateClassLoader(settingsLocation.getSettingsDir(), startParameter);
 
-        return settingsProcessor.process(gradle, settingsLocation, buildSourceClassLoaderScope, startParameter);
+        SettingsInternal result = settingsProcessor.process(gradle, settingsLocation, gradle.getClassLoaderScope(), startParameter);
+
+
+        // TODO: throwing away class loader here, can probably remove from underlying method sig
+        buildSourceBuilder.buildAndCreateClassLoader(settingsLocation.getSettingsDir(), startParameter);
+        return result;
     }
 
     private SettingsLocation findSettings(StartParameter startParameter) {
