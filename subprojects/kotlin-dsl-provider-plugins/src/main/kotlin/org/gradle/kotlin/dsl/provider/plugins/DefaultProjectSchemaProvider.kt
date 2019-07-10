@@ -34,6 +34,12 @@ import org.gradle.kotlin.dsl.accessors.ProjectSchemaProvider
 import org.gradle.kotlin.dsl.accessors.SchemaType
 import org.gradle.kotlin.dsl.accessors.TypedProjectSchema
 
+import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
+
+import kotlin.reflect.KClass
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.superclasses
+
 
 class DefaultProjectSchemaProvider : ProjectSchemaProvider {
 
@@ -118,7 +124,39 @@ fun accessibleConventionsSchema(plugins: Map<String, Any>) =
 
 private
 fun accessibleContainerSchema(collectionSchema: NamedDomainObjectCollectionSchema) =
-    collectionSchema.elements.filter { isPublic(it.name) }
+    collectionSchema.elements
+        .filter { isPublic(it.name) }
+        .map {
+            val kotlinPublicType = it.publicType.concreteClass.kotlin
+            it.takeIf { kotlinPublicType.visibility == KVisibility.PUBLIC }
+                ?: ProjectSchemaNamedDomainObjectSchema(
+                    it.name,
+                    TypeOf.typeOf(kotlinPublicType.firstKotlinPublicOrSelf.java)
+                )
+        }
+
+
+private
+val KClass<*>.firstKotlinPublicOrSelf
+    get() = firstKotlinPublicOrNull ?: this
+
+
+private
+val KClass<*>.firstKotlinPublicOrNull: KClass<*>?
+    get() = takeIf { visibility == KVisibility.PUBLIC }
+        ?: superclasses.firstNotNullResult { it.firstKotlinPublicOrNull }
+
+
+private
+class ProjectSchemaNamedDomainObjectSchema(
+    private val objectName: String,
+    private val objectPublicType: TypeOf<*>
+) : NamedDomainObjectCollectionSchema.NamedDomainObjectSchema {
+
+    override fun getName() = objectName
+
+    override fun getPublicType() = objectPublicType
+}
 
 
 private
