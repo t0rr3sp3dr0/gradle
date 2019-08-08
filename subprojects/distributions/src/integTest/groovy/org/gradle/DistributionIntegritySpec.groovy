@@ -101,7 +101,6 @@ class DistributionIntegritySpec extends DistributionIntegrationSpec {
             'plugins/aws-java-sdk-s3-1.11.407.jar' : '15255fde9a9acbe226109c6767bc37d7415beeae2cca959bccf12e939da53280',
             'plugins/bcpg-jdk15on-1.61.jar' : 'd31561762756bdc8b70be5c1c72d9e972914e5549eaffe25e684b73aa15d1f63',
             'plugins/bcprov-jdk15on-1.61.jar' : 'dba6e408f205215ad1a89b70b37353d3cdae4ec61037e1feee885704e2413458',
-            'plugins/bsh-2.0b6.jar' : 'a17955976070c0573235ee662f2794a78082758b61accffce8d3f8aedcd91047',
             'plugins/commons-codec-1.11.jar' : 'e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d',
             'plugins/dd-plist-1.21.jar' : '019c61abd93ecf614e3d214e9fed942dcf47d9d2d9548fe59d70f0840ba32fb6',
             'plugins/google-api-client-1.25.0.jar' : '24e1a69d6c04e6e72e3e16757d46d32daa7dd43cb32c3895f832f25358be1402',

@@ -51,7 +51,6 @@ dependencies {
     implementation(library("junit"))
     implementation(library("testng"))
     implementation(library("inject"))
-    implementation(library("bsh"))
 
     testImplementation(project(":baseServicesGroovy"))
     testImplementation("com.google.inject:guice:2.0") {

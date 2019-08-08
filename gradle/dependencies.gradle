@@ -42,7 +42,6 @@ libraries.awsS3_s3 =            [coordinates: 'com.amazonaws:aws-java-sdk-s3',  
 libraries.awsS3_kms =           [coordinates: 'com.amazonaws:aws-java-sdk-kms',  version: libraries.awsS3_core.version]
 libraries.bouncycastle_provider = [coordinates: 'org.bouncycastle:bcprov-jdk15on', version: '1.61']
 libraries.bouncycastle_pgp =    [coordinates: 'org.bouncycastle:bcpg-jdk15on',   version: libraries.bouncycastle_provider.version]
-libraries.bsh =                 [coordinates: 'org.apache-extras.beanshell:bsh', version: '2.0b6']
 libraries.commons_compress =    [coordinates: 'org.apache.commons:commons-compress', version: '1.18']
 libraries.commons_httpclient =  [coordinates: 'org.apache.httpcomponents:httpclient', version: '4.5.9']
 libraries.commons_io =          [coordinates: 'commons-io:commons-io', version: '2.6']
