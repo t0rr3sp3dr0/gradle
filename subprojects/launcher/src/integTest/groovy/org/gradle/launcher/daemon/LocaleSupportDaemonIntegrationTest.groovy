@@ -16,7 +16,6 @@
 
 package org.gradle.launcher.daemon
 
-import org.apache.commons.lang.LocaleUtils
 import org.gradle.integtests.fixtures.daemon.DaemonIntegrationSpec
 import org.gradle.util.GradleVersion
 import spock.lang.Issue
@@ -26,9 +25,9 @@ import spock.lang.Unroll
 class LocaleSupportDaemonIntegrationTest extends DaemonIntegrationSpec {
 
     def locales = [
-            LocaleUtils.toLocale("es_MX"),
-            LocaleUtils.toLocale("ja_JP"),
-            LocaleUtils.toLocale("hr_HR")
+            new Locale("es", "MX"),
+            new Locale("ja", "JP"),
+            new Locale("hr", "HR"),
     ].findAll {
         it != Locale.default
     }

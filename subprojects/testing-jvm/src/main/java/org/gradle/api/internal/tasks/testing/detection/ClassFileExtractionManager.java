@@ -15,7 +15,6 @@
  */
 package org.gradle.api.internal.tasks.testing.detection;
 
-import org.apache.commons.lang.text.StrBuilder;
 import org.gradle.api.GradleException;
 import org.gradle.api.internal.file.DefaultTemporaryFileProvider;
 import org.gradle.api.internal.file.TemporaryFileProvider;
@@ -92,7 +91,7 @@ public class ClassFileExtractionManager {
         boolean classFileExtracted = false;
 
         final File extractedClassFile = tempFile();
-        final String classFileName = new StrBuilder().append(className).append(".class").toString();
+        final String classFileName = className + ".class";
         final String classNamePackage = classNamePackage(className);
         final Set<File> packageJarFiles = packageJarFilesMappings.get(classNamePackage);
 

@@ -16,7 +16,6 @@
 package org.gradle.util;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.gradle.api.UncheckedIOException;
 import org.gradle.internal.IoActions;
 import org.gradle.util.internal.LimitedDescription;
@@ -86,7 +85,7 @@ public class GFileUtils {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
-            out.write(ArrayUtils.EMPTY_BYTE_ARRAY);
+            out.write(new byte[0]);
         } catch (IOException e) {
             throw new UncheckedIOException("Could not update timestamp for " + file, e);
         } finally {

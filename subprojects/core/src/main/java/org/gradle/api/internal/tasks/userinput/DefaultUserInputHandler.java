@@ -16,9 +16,8 @@
 package org.gradle.api.internal.tasks.userinput;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.gradle.api.Transformer;
 import org.gradle.internal.logging.events.OutputEventListener;
 import org.gradle.internal.logging.events.PromptOutputEvent;
@@ -51,7 +50,7 @@ public class DefaultUserInputHandler implements UserInputHandler {
         StringBuilder builder = new StringBuilder();
         builder.append(question);
         builder.append(" [");
-        builder.append(StringUtils.join(YES_NO_CHOICES, ", "));
+        builder.append(Joiner.on(", ").join(YES_NO_CHOICES));
         builder.append("] ");
         return prompt(builder.toString(), new BooleanParser());
     }
@@ -63,7 +62,7 @@ public class DefaultUserInputHandler implements UserInputHandler {
         builder.append(" (default: ");
         builder.append(defaultValue ? "yes" : "no");
         builder.append(") [");
-        builder.append(StringUtils.join(YES_NO_CHOICES, ", "));
+        builder.append(Joiner.on(", ").join(YES_NO_CHOICES));
         builder.append("] ");
         return prompt(builder.toString(), defaultValue, new BooleanParser());
     }
@@ -170,14 +169,14 @@ public class DefaultUserInputHandler implements UserInputHandler {
     }
 
     private String sanitizeInput(String input) {
-        return CharMatcher.javaIsoControl().removeFrom(StringUtils.trim(input));
+        return CharMatcher.javaIsoControl().removeFrom(input.trim());
     }
 
     private class BooleanParser implements Transformer<Boolean, String> {
         @Override
         public Boolean transform(String value) {
             if (YES_NO_CHOICES.contains(value)) {
-                return BooleanUtils.toBoolean(value);
+                return "yes".equalsIgnoreCase(value);
             }
             sendPrompt("Please enter 'yes' or 'no': ");
             return null;

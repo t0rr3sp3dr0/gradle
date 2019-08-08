@@ -16,27 +16,27 @@
 
 package org.gradle.cache.internal;
 
+import com.google.common.base.Splitter;
 import com.google.common.primitives.Ints;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 public final class CacheVersion implements Comparable<CacheVersion> {
-
+    private static final int[] EMPTY_INT_ARRAY = new int[0];
     public static final String COMPONENT_SEPARATOR = ".";
 
     public static CacheVersion parse(String version) {
-        String[] parts = StringUtils.split(version, COMPONENT_SEPARATOR);
-        int[] components = new int[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-            components[i] = Integer.parseInt(parts[i]);
+        List<String> parts = Splitter.on(COMPONENT_SEPARATOR).splitToList(version);
+        int[] components = new int[parts.size()];
+        for (int i = 0; i < parts.size(); i++) {
+            components[i] = Integer.parseInt(parts.get(i));
         }
         return new CacheVersion(components);
     }
 
     public static CacheVersion empty() {
-        return new CacheVersion(ArrayUtils.EMPTY_INT_ARRAY);
+        return new CacheVersion(EMPTY_INT_ARRAY);
     }
 
     public static CacheVersion of(int component) {
@@ -44,7 +44,7 @@ public final class CacheVersion implements Comparable<CacheVersion> {
     }
 
     public static CacheVersion of(int... components) {
-        return new CacheVersion(ArrayUtils.clone(components));
+        return new CacheVersion(components.clone());
     }
 
     private final int[] components;

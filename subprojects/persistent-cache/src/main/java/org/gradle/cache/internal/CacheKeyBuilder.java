@@ -16,13 +16,11 @@
 
 package org.gradle.cache.internal;
 
+import com.google.common.collect.ObjectArrays;
 import org.gradle.internal.classpath.ClassPath;
 import org.gradle.internal.hash.HashCode;
 
 import java.io.File;
-
-import static org.apache.commons.lang.ArrayUtils.EMPTY_OBJECT_ARRAY;
-import static org.apache.commons.lang.ArrayUtils.add;
 
 /**
  * Builds keys suitable to be used with {@link org.gradle.cache.CacheRepository#cache(String)}.
@@ -42,11 +40,13 @@ public interface CacheKeyBuilder {
      */
     class CacheKeySpec {
 
+        private static final Object[] EMPTY = new Object[0];
+
         public static CacheKeySpec withPrefix(String prefix) {
             if (prefix == null || prefix.isEmpty()) {
                 throw new IllegalArgumentException("Cache key prefix cannot be null or empty.");
             }
-            return new CacheKeySpec(prefix, EMPTY_OBJECT_ARRAY);
+            return new CacheKeySpec(prefix, EMPTY);
         }
 
         private final String prefix;
@@ -90,7 +90,7 @@ public interface CacheKeyBuilder {
             if (c == null) {
                 throw new IllegalArgumentException("Cache key component cannot be null.");
             }
-            return new CacheKeySpec(prefix, add(components, c));
+            return new CacheKeySpec(prefix, ObjectArrays.concat(components, c));
         }
     }
 }
