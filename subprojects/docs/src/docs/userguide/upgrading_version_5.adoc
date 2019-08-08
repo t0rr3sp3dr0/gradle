@@ -97,6 +97,7 @@ Please use https://scans.gradle.com/[build scans] for build analysis and compari
 ==== Updates to bundled Gradle dependencies
 
 - Groovy has been updated to http://groovy-lang.org/changelogs/changelog-2.5.8.html[Groovy 2.5.8].
+- Ant has been updated to https://archive.apache.org/dist/ant/RELEASE-NOTES-1.10.6.html[Ant 1.10.6].
 
 The following breaking changes will appear as deprecation warnings with Gradle 5.6:
 
