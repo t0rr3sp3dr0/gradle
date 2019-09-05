@@ -33,11 +33,19 @@ import org.gradle.util.GUtil;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 import static org.gradle.process.internal.util.LongCommandLineDetectionUtil.hasCommandLineExceedMaxLength;
 import static org.gradle.process.internal.util.LongCommandLineDetectionUtil.hasEnvironmentVariableExceedMaxLength;
@@ -311,11 +319,23 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
         Map<String, String> environment = getActualEnvironment();
 
         if (hasCommandLineExceedMaxLength(getExecutable(), arguments)) {
+            int classPathFlagIndex = arguments.indexOf("-cp");
             if (shouldUseEnvironmentVariable(arguments, environment)) {
-                int classPathFlagIndex = arguments.indexOf("-cp");
                 environment.put("CLASSPATH", arguments.get(classPathFlagIndex + 1));
                 arguments.remove(classPathFlagIndex);
                 arguments.remove(classPathFlagIndex);
+                LOGGER.info("Gradle is shortening the command line by moving the classpath to the CLASSPATH environment variable");
+            } else {
+                try {
+                    File pathingJarFile = File.createTempFile("gradle-javaexec-classpath", ".jar");
+                    List<String> jvmArgs = writePathingJarFile(classpath, pathingJarFile);
+                    arguments.remove(classPathFlagIndex);
+                    arguments.remove(classPathFlagIndex);
+                    arguments.addAll(classPathFlagIndex, jvmArgs);
+                    LOGGER.info("Gradle is shortening the command line by moving the classpath to a pathing JAR");
+                } catch (IOException e) {
+                    LOGGER.info("Pathing JAR could not be created, Gradle cannot shorten the command line");
+                }
             }
         }
 
@@ -326,7 +346,7 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
         int classPathFlagIndex = arguments.indexOf("-cp");
         if (classPathFlagIndex == -1) {
             // No class path flag, so we can't use CLASSPATH
-            LOGGER.info("No class path flag found in the command line, Gradle cannot shorten the command line");
+            LOGGER.info("No class path flag found in the command line, Gradle cannot shorten the command line using CLASSPATH environment variable");
             return false;
         }
 
@@ -358,6 +378,21 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
 
         // The CLASSPATH wasn't declared or inherited
         return true;
+    }
+
+    private List<String> writePathingJarFile(FileCollection classPath, File pathingJarFile) throws IOException {
+        try (JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(pathingJarFile), toManifest(classPath))) {
+            jarOutputStream.putNextEntry(new ZipEntry("META-INF/"));
+        }
+        return Arrays.asList("-cp", pathingJarFile.getAbsolutePath());
+    }
+
+    private static Manifest toManifest(FileCollection classPath) {
+        Manifest manifest = new Manifest();
+        Attributes attributes = manifest.getMainAttributes();
+        attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        attributes.putValue("Class-Path", classPath.getFiles().stream().map(File::toURI).map(URI::toString).collect(Collectors.joining(" ")));
+        return manifest;
     }
 
     @Override
