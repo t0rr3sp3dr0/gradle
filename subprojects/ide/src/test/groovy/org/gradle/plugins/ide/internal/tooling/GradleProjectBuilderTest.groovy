@@ -16,7 +16,7 @@
 
 package org.gradle.plugins.ide.internal.tooling
 
-
+import org.gradle.api.DefaultTask
 import org.gradle.test.fixtures.AbstractProjectBuilderSpec
 import org.gradle.util.TestUtil
 
@@ -37,5 +37,18 @@ class GradleProjectBuilderTest extends AbstractProjectBuilderSpec {
         model.description == 'a test project'
         model.buildDirectory == project.buildDir
         model.buildScript.sourceFile == buildFile
+    }
+
+    def "can disable populating tasks in model builder"() {
+        setup:
+        def project = TestUtil.builder(temporaryFolder).withName("test").build()
+        project.tasks.create('task', DefaultTask)
+        System.setProperty("org.gradle.internal.model.gradleproject.disable-task-creation", "true")
+
+        when:
+        def model = builder.buildAll(project)
+
+        then:
+        model.tasks.isEmpty()
     }
 }
