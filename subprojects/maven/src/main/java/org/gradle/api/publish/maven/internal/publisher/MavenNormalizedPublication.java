@@ -69,6 +69,7 @@ public class MavenNormalizedPublication {
 
     /**
      * @deprecated Kept to not break third-party plugins
+     * Sadly this is still used by org.jfrog.buildinfo:build-info-extractor-gradle
      */
     @Deprecated
     public File getPomFile() {
