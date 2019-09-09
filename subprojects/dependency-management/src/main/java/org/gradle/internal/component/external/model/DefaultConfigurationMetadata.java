@@ -126,7 +126,7 @@ public class DefaultConfigurationMetadata extends AbstractConfigurationMetadata 
     @Override
     public ImmutableList<? extends ModuleComponentArtifactMetadata> getArtifacts() {
         if (calculatedArtifacts == null) {
-            calculatedArtifacts = componentMetadataRules.applyVariantFilesMetadataRules(this, getOriginalArtifacts(), getComponentId());
+            calculatedArtifacts = componentMetadataRules.applyVariantFilesMetadataRulesToArtifacts(this, getOriginalArtifacts(), getComponentId());
         }
         return calculatedArtifacts;
     }
