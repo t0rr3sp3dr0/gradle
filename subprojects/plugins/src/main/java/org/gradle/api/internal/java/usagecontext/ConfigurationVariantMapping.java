@@ -16,6 +16,7 @@
 package org.gradle.api.internal.java.usagecontext;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.gradle.api.Action;
@@ -30,13 +31,14 @@ import org.gradle.api.capabilities.Capability;
 import org.gradle.api.component.ConfigurationVariantDetails;
 import org.gradle.api.internal.artifacts.configurations.ConfigurationInternal;
 import org.gradle.api.internal.component.UsageContext;
+import org.gradle.internal.Actions;
 
 import java.util.Collection;
 import java.util.Set;
 
 public class ConfigurationVariantMapping {
     private final ConfigurationInternal outgoingConfiguration;
-    private final Action<? super ConfigurationVariantDetails> action;
+    private Action<? super ConfigurationVariantDetails> action;
 
     public ConfigurationVariantMapping(ConfigurationInternal outgoingConfiguration, Action<? super ConfigurationVariantDetails> action) {
         this.outgoingConfiguration = outgoingConfiguration;
@@ -47,6 +49,10 @@ public class ConfigurationVariantMapping {
         if (!seen.add(name)) {
             throw new InvalidUserDataException("Cannot add feature variant '" + name + "' as a variant with the same name is already registered");
         }
+    }
+
+    public void addAction(Action<? super ConfigurationVariantDetails> action) {
+        this.action = Actions.composite(this.action, action);
     }
 
     public void collectUsageContexts(final ImmutableCollection.Builder<UsageContext> outgoing) {
